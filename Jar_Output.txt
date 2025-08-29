@@ -1,0 +1,47 @@
+=== Starting Bajaj Finserv Health Qualifier ===
+Student: Surith L G
+Registration: 22BLC1247 (Odd - Question 1)
+? Generating webhook...
+? Webhook generated successfully!
+Webhook URL: https://bfhldevapigw.healthrx.co.in/hiring/testWebhook/JAVA
+? Access Token received (length: 240)
+Token preview: eyJhbGciOiJIUzI1NiJ9...
+? SQL Query prepared for submission
+? Submitting solution...
+Using access token: eyJhbGciOiJIUzI1NiJ9.eyJyZWdOb...
+? Request Headers: [Content-Type:"application/json", Authorization:"eyJhbGciOiJIUzI1NiJ9.eyJyZWdObyI6IjIyQkxDMTI0NyIsIm5hbWUiOiJTdXJpdGggTCBHIiwiZW1haWwiOiJzdXJpdGhjb2RlczIwNEBnbWFpbC5jb20iLCJzdWIiOiJ3ZWJob29rLXVzZXIiLCJpYXQiOjE3NTY0NDgwNjAsImV4cCI6MTc1NjQ0ODk2MH0.9ISlWE2WyOSTmfmZ1sfpSH48eQcCC1zac_eAanyyHCg"]
+? Request Body: SELECT
+    p.AMOUNT as SALARY,
+    CONCAT(e.FIRST_NAME, ' ', e.LAST_NAME) as NAME,
+    TIMESTAMPDIFF(YEAR, e.DOB, CURDATE()) as AGE,
+    d.DEPARTMENT_NAME
+FROM PAYMENTS p
+INNER JOIN EMPLOYEE e ON p.EMP_ID = e.EMP_ID
+INNER JOIN DEPARTMENT d ON e.DEPARTMENT = d.DEPARTMENT_ID
+WHERE DAY(p.PAYMENT_TIME) != 1
+AND p.AMOUNT = (
+    SELECT MAX(p2.AMOUNT)
+    FROM PAYMENTS p2
+    WHERE DAY(p2.PAYMENT_TIME) != 1
+)
+LIMIT 1;
+
+? Final SQL Query submitted:
+SELECT
+    p.AMOUNT as SALARY,
+    CONCAT(e.FIRST_NAME, ' ', e.LAST_NAME) as NAME,
+    TIMESTAMPDIFF(YEAR, e.DOB, CURDATE()) as AGE,
+    d.DEPARTMENT_NAME
+FROM PAYMENTS p
+INNER JOIN EMPLOYEE e ON p.EMP_ID = e.EMP_ID
+INNER JOIN DEPARTMENT d ON e.DEPARTMENT = d.DEPARTMENT_ID
+WHERE DAY(p.PAYMENT_TIME) != 1
+AND p.AMOUNT = (
+    SELECT MAX(p2.AMOUNT)
+    FROM PAYMENTS p2
+    WHERE DAY(p2.PAYMENT_TIME) != 1
+)
+LIMIT 1;
+? Server response: {"success":true,"message":"Webhook processed successfully"}
+? Solution submitted successfully!
+=== Qualifier process completed ===
