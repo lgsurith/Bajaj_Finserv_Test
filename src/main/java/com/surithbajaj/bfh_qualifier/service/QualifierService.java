@@ -28,14 +28,12 @@ public class QualifierService implements CommandLineRunner {
             System.out.println("Student: Surith L G");
             System.out.println("Registration: 22BLC1247 (Odd - Question 1)");
 
-            // Step 1: Generate webhook
             WebhookResponse webhookResponse = generateWebhook();
             
             if (webhookResponse != null) {
                 System.out.println("✓ Webhook generated successfully!");
                 System.out.println("Webhook URL: " + webhookResponse.getWebhook());
                 
-                // Debug: Check if we received accessToken
                 String accessToken = webhookResponse.getAccessToken();
                 if (accessToken != null && !accessToken.isEmpty()) {
                     System.out.println("✓ Access Token received (length: " + accessToken.length() + ")");
@@ -45,11 +43,9 @@ public class QualifierService implements CommandLineRunner {
                     return;
                 }
                 
-                // Step 2: Get the SQL query for Question 1 (Odd registration number)
                 String sqlQuery = getQuestion1Solution();
                 System.out.println("✓ SQL Query prepared for submission");
                 
-                // Step 3: Submit the solution
                 submitSolution(sqlQuery, accessToken);
                 
                 System.out.println("✓ Solution submitted successfully!");
@@ -67,16 +63,13 @@ public class QualifierService implements CommandLineRunner {
         try {
             System.out.println("📡 Generating webhook...");
             
-            // Create request body with your details
             WebhookRequest request = new WebhookRequest("Surith L G", "22BLC1247", "surithcodes204@gmail.com");
             
-            // Set headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             
             HttpEntity<WebhookRequest> entity = new HttpEntity<>(request, headers);
             
-            // Make POST request
             WebhookResponse response = restTemplate.postForObject(WEBHOOK_GENERATE_URL, entity, WebhookResponse.class);
             
             return response;
@@ -88,11 +81,7 @@ public class QualifierService implements CommandLineRunner {
     }
 
     private String getQuestion1Solution() {
-        // SQL Solution for Question 1 (Odd registration numbers)
-        // Problem: Find the highest salary that was credited to an employee, 
-        // but only for transactions that were NOT made on the 1st day of any month.
-        // Return: SALARY, NAME (first + last), AGE, DEPARTMENT_NAME
-        
+        // Find highest salary NOT paid on 1st day of any month
         return """
             SELECT 
                 p.AMOUNT as SALARY,
@@ -117,20 +106,17 @@ public class QualifierService implements CommandLineRunner {
             System.out.println("📤 Submitting solution...");
             System.out.println("Using access token: " + accessToken.substring(0, Math.min(30, accessToken.length())) + "...");
             
-            // Create request body
             SolutionRequest solutionRequest = new SolutionRequest(sqlQuery);
             
-            // Set headers with JWT token (direct token, not Bearer format based on task requirements)
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", accessToken);  // Direct token as per task requirements
+            headers.set("Authorization", accessToken); 
             
             HttpEntity<SolutionRequest> entity = new HttpEntity<>(solutionRequest, headers);
             
             System.out.println("📋 Request Headers: " + headers.toString());
             System.out.println("📋 Request Body: " + solutionRequest.getFinalQuery());
             
-            // Make POST request to submit solution
             String response = restTemplate.exchange(WEBHOOK_SUBMIT_URL, HttpMethod.POST, entity, String.class).getBody();
             
             System.out.println("📋 Final SQL Query submitted:");
