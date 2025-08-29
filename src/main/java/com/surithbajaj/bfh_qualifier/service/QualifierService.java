@@ -35,12 +35,22 @@ public class QualifierService implements CommandLineRunner {
                 System.out.println("✓ Webhook generated successfully!");
                 System.out.println("Webhook URL: " + webhookResponse.getWebhook());
                 
+                // Debug: Check if we received accessToken
+                String accessToken = webhookResponse.getAccessToken();
+                if (accessToken != null && !accessToken.isEmpty()) {
+                    System.out.println("✓ Access Token received (length: " + accessToken.length() + ")");
+                    System.out.println("Token preview: " + accessToken.substring(0, Math.min(20, accessToken.length())) + "...");
+                } else {
+                    System.err.println("❌ No access token received!");
+                    return;
+                }
+                
                 // Step 2: Get the SQL query for Question 1 (Odd registration number)
                 String sqlQuery = getQuestion1Solution();
                 System.out.println("✓ SQL Query prepared for submission");
                 
                 // Step 3: Submit the solution
-                submitSolution(sqlQuery, webhookResponse.getAccessToken());
+                submitSolution(sqlQuery, accessToken);
                 
                 System.out.println("✓ Solution submitted successfully!");
                 System.out.println("=== Qualifier process completed ===");
@@ -105,16 +115,20 @@ public class QualifierService implements CommandLineRunner {
     private void submitSolution(String sqlQuery, String accessToken) {
         try {
             System.out.println("📤 Submitting solution...");
+            System.out.println("Using access token: " + accessToken.substring(0, Math.min(30, accessToken.length())) + "...");
             
             // Create request body
             SolutionRequest solutionRequest = new SolutionRequest(sqlQuery);
             
-            // Set headers with JWT token
+            // Set headers with JWT token (direct token, not Bearer format based on task requirements)
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(accessToken);
+            headers.set("Authorization", accessToken);  // Direct token as per task requirements
             
             HttpEntity<SolutionRequest> entity = new HttpEntity<>(solutionRequest, headers);
+            
+            System.out.println("📋 Request Headers: " + headers.toString());
+            System.out.println("📋 Request Body: " + solutionRequest.getFinalQuery());
             
             // Make POST request to submit solution
             String response = restTemplate.exchange(WEBHOOK_SUBMIT_URL, HttpMethod.POST, entity, String.class).getBody();
@@ -129,3 +143,4 @@ public class QualifierService implements CommandLineRunner {
         }
     }
 }
+

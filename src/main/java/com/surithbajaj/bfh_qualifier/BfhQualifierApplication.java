@@ -17,3 +17,4 @@ public class BfhQualifierApplication {
 		return new RestTemplate();
 	}
 }
+
